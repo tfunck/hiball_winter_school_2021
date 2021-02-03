@@ -27,7 +27,7 @@ def save_output_images(img, seg, dirname, filename):
     plt.savefig(qc_fn)
 
     # Save segemented image
-    imageio.imsave(seg_fn, seg)
+    imageio.imsave(seg_fn, seg))
 
 ####################
 ### Thresholding ###
@@ -105,14 +105,14 @@ def neuralnetwork_segmentation(source_dir, label_dir, epochs=10):
     history = model.fit_generator(
             generator(source_dir,label_dir,(0,n_train),10), 
             validation_data=generator(source_dir,label_dir,(n_train,n_train+n_val)), 
-            validation_steps=n_val/10, epochs=epochs,steps_per_epoch=np.ceil(n_train/n)) #, validation_split=.7, validation_data=None, validation_steps=None, validation_freq=1)
-   
-    for i in range(images.shape[0]) :
+            validation_steps=n_val/10, epochs=epochs,steps_per_epoch=np.ceil(n_train/n)) 
+     
+    for i in range(len(images)) :
         filename = images[i]
         img = imageio.imread(filename)
-        img = img.reshape(1,img.shape[0],img.shape[1],1)
-        seg = model.predict(x, batch_size = 1)
-        save_output_images(img, seg, 'neuralnetwork', filename)
+        seg = model.predict(img.reshape(1,img.shape[0],img.shape[1],1) , batch_size = 1)
+        seg = np.argmax(seg, axis=3).reshape(img.shape)
+        save_output_images(img, np.array(seg * 255).astype(np.unit8), 'neuralnetwork', filename)
 
 if __name__ == '__main__' :
     # Get list of images
@@ -137,7 +137,7 @@ if __name__ == '__main__' :
     #    watershed_segmentation(img, 'watershed', filename)
 
     # Segment with Neural Network
-    neuralnetwork_segmentation('png', 'threshold', epochs=15)
+    neuralnetwork_segmentation('png', 'threshold', epochs=1)
 
 
 
