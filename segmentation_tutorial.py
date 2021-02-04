@@ -1,7 +1,7 @@
 from sklearn.cluster import SpectralClustering
 from sklearn.feature_extraction import image
 from skimage.filters import threshold_otsu
-from sklearn.cluster import KMeans
+from sklearn.cluster import KMeans, DBSCAN, AgglomerativeClustering 
 from scipy.ndimage import label
 from scipy.ndimage import gaussian_filter
 import nibabel as nib
@@ -14,6 +14,8 @@ from glob import glob
 
 def save_output_images(img, seg, dirname, filename):
     # Create output filename
+    print(dirname)
+    print(filename)
     seg_fn = '{}/seg_{}'.format(dirname, os.path.basename(filename))
     qc_fn = '{}/qc_{}'.format(dirname, os.path.basename(filename))
 
@@ -25,9 +27,9 @@ def save_output_images(img, seg, dirname, filename):
     plt.imshow(seg)
     plt.tight_layout()
     plt.savefig(qc_fn)
-
+    plt.imshow(seg); plt.show();
     # Save segemented image
-    imageio.imsave(seg_fn, seg))
+    imageio.imsave(seg_fn, seg)
 
 ####################
 ### Thresholding ###
@@ -50,8 +52,10 @@ def threshold_segmentation(img, filename=None,  dirname='threshold'):
 ##################
 def kmeans_segmentation(img,  filename=None, dirname='kmeans', save_output=True):
     init = np.array([0,img.max()]).reshape(-1,1)
-
-    seg = KMeans(n_clusters=2, init=init).fit_predict(img.reshape(-1,1)).reshape(img.shape)
+    #model = KMeans(n_clusters=2, init=init)
+    #model = DBSCAN(eps=0.1, min_samples=700 )
+    model =  AgglomerativeClustering(linkage='ward')
+    seg = model.fit_predict(img.reshape(-1,1)).reshape(img.shape)
 
     # Save qc and segemented image
     if filename != None : save_output_images(img, seg, dirname, filename )
@@ -129,12 +133,13 @@ if __name__ == '__main__' :
     #    threshold_segmentation(img, filename)
         
     # Segment with K-Means
-    #for filename, img in zip(image_filenames, images) :
-    #   kmeans_segmentation(img, 'kmeans', filename)
-    
+    for filename, img in zip(image_filenames, images) :
+        print(filename)
+        kmeans_segmentation(img,  filename)
+        exit(0)
     # Segment with watershed method
-    #for filename, img in zip(image_filenames, images) :
-    #    watershed_segmentation(img, 'watershed', filename)
+    for filename, img in zip(image_filenames, images) :
+        watershed_segmentation(img,  filename)
 
     # Segment with Neural Network
     neuralnetwork_segmentation('png', 'threshold', epochs=1)
