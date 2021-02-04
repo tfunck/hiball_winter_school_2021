@@ -1,5 +1,5 @@
 # HIBALL Winter School : Segmentation
 
-google colab : https://colab.research.google.com/drive/1qabrVJCF4jfNsYHCnHr6pMf0enYkCSVW?usp=sharing
+Instructions: Download "HIBALL_Winter_School_2021.ipynb" and load it in Google Colab (or run it locally). 
 
 slides : https://docs.google.com/presentation/d/10b6yx6yPou1qkeUYKAGiN_jSCGGmjq6U2gL1y88XVp0/edit?usp=sharing
